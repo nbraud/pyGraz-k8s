@@ -27,6 +27,7 @@
     devShells.${system}.default = pkgs.mkShellNoCC {
       buildInputs = with pkgs; [
         # kubernetes
+        kubernetes-helm
         kind
         self.packages.${system}.cloud-provider-kind
         kubectl

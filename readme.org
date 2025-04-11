@@ -4,6 +4,8 @@
 - kind create cluster --config kind-config.yaml
 - docker pull quay.io/cilium/cilium:v1.17.2
 - kind load docker-image quay.io/cilium/cilium:v1.17.2
+- download cilium's helm chart with =helm pull cilium --version 1.17.2 --repo https://helm.cilium.io/=
+  this is a workaround for something I haven't debugged yet
 
 ** setup pulumi for new project
 - pulumi login --local

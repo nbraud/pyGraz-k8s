@@ -1,5 +1,8 @@
 """A Kubernetes Python Pulumi program"""
 
+from functools import reduce
+import operator
+
 import pulumi
 from pulumi_kubernetes.apps.v1 import Deployment
 from pulumi_kubernetes.core.v1 import Service
@@ -11,6 +14,19 @@ cfg = pulumi.Config()
 cilium_chart = cilium.deploy(cfg, features = {
     'hubble', 'l7'
 })
+
+pulumi.export(
+    "cilium-ingress",
+    # FIXME: this should filter by svc name
+    cilium_chart.resources.apply(lambda resources: [
+        svc.status.load_balancer.apply(lambda lb: [ ingress.ip for ingress in lb.ingress or [] ])
+        for svc in resources
+        if isinstance(svc, Service)
+    ]).apply(lambda out:
+        # convert a List[Output[_]] into an Output[List[_]]
+        pulumi.Output.all(*out)
+    ).apply(lambda out: reduce(operator.add, out, [])),
+)
 
 app_name = "nginx"
 app_labels = { "app": app_name }
