@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from functools import reduce
+import importlib.resources
 
 import pulumi
 import pulumi_kubernetes as k8s
@@ -18,6 +19,15 @@ def deploy(depends_on: Sequence[pulumi.Resource] = frozenset()):
         namespace = namespace,
         opts = pulumi.ResourceOptions(depends_on = [ gatewayAPI_CRDs, *depends_on ]),
     )
+
+    # TODO: find a reasonable way to handle CRDs, crd2pulumi is not useable as-is
+    # TODO: should this be in the default namespace?
+    with importlib.resources.path(__name__, "http-gateway.yaml") as yaml_path:
+        default_gw = k8s.yaml.v2.ConfigFile(
+            "http-gateway",
+            file = str(yaml_path),
+            opts = pulumi.ResourceOptions(depends_on = [ gatewayAPI_CRDs ]),
+        )
 
     pulumi.export(
         "nginx-ingress",
