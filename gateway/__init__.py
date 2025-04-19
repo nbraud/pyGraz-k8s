@@ -41,4 +41,9 @@ def deploy(depends_on: Sequence[pulumi.Resource] = frozenset()):
         ))).apply(lambda out: reduce(lambda acc, x: acc + (x["ips"] if x["pred"] else []), out, [])),
     )
 
-    return chart
+    return {
+        "namespace": namespace,
+        "chart": chart,
+        "crd": gatewayAPI_CRDs,
+        "gw": default_gw,
+    }
