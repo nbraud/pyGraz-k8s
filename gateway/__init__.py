@@ -6,7 +6,7 @@ import pulumi
 import pulumi_kubernetes as k8s
 
 def deploy(depends_on: Sequence[pulumi.Resource] = frozenset()):
-    namespace = k8s.core.v1.Namespace("nginx")
+    namespace = k8s.core.v1.Namespace("gateway")
     gatewayAPI_CRDs = k8s.yaml.v2.ConfigFile(
         "gateway-api-CRDs",
         file = "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml",
